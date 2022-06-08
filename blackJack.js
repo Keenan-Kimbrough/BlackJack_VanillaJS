@@ -10,87 +10,138 @@ Blackjack
      "Passing" staying with their current cards and no longer taking any turns this round
   - If a player ever exceeds 21, they immediately lose the current round.
   - Once everyone has passed, the round is over and the person with a card value closest to 21 wins. 
+
+
+Implementation Notes:
+Dealer doesn't have a hand, just players.
+No UI needed (can just console log winner each round)
+No Input needed (when players decide hit or pass, just pick randomly)
+Aces can count as 11 (do not need to worry about multiple values)
+Every round is fresh (no need to keep state between rounds)
 */
 
-// Round: 1
-// Playing with 4 players
-// Dealer: AH AS 5C - bust
-// P1: AH AS 1C - blackjack
-// P2: AH 9C - 19
-// P3: AH AS AC - blackjack
-// Winner(s): P1, P3
+/*
+Deck of Playing Cards
+  52 cards total
+  36 - Number cards 2-10 in 4 suits (heart/diamond/spade/club, this doesn't matter for blackjack)
+  12 - Face cards Jack, Queen, King in 4 suits - value=10
+  4 - Aces in 4 suites - value=11
+*/
+let gameOver = false
+class Game {
+    constructor(numPlayers) {
+        this.players = new Player()
+        this.deck = new Deck()
+    
 
-var deck 
+    }
 
-function buildDeck() {
-  let values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-  let types = ["C", "D", "H", "S"];
-  deck = [];
+play (numPlayers) {
+    
 
-  for (let i = 0; i < types.length; i++) {
-      for (let j = 0; j < values.length; j++) {
-          deck.push(values[j] + "-" + types[i]); //A-C -> K-C, A-D -> K-D
-      }
-  }
-  // console.log(deck);
-  console.log()
-}
-buildDeck()
+    for (let player = 0; player < numPlayers; player++) {
+        this.players[player] = new Player();
+        let sumPlayer = 0;
+        
+        while (this.players[player].playerSum < 18 && this.players[player].skipTurn === false) {
+        let card = this.deck.getCard();
+        
+        this.players[player].hand.push(card);
+        console.log(`Card --${card}`)
 
-playGame = (numRounds, numPlayers) => {
-  console.log(`Rounds: ${numRounds}, Players: ${numPlayers}`);
-  for (let round = 0; round < numRounds; round++) {
-    console.log(`====\nRound: ${round + 1}`);
-    singleRound(numPlayers);
-  }
-};
+        this.players[player].playerSum += card.getValue();
 
-// GOAL: Make this into randomCard
-randomNumber = (max) => {
- let  = deck
-  // Make this into a "random card"
-  //map through deck array and pick the first index of each inside array and turn into number then return that numb
-  for (let i = 0; i < deck.length; i++) {
-    let j = Math.floor(Math.random() * deck.length); // (0-1) * 52 => (0-51.9999)
-    let temp = deck[i];
-    deck[i] = deck[j];
-    deck[j] = temp;
+        console.log(this.players[player].playerSum )
+        
+    
+
+        }
+        
+
+        
+
+      console.log(sumPlayer)
+        console.log(`Player ${player}: ${this.players[player]}`);
+    }
     
 }
-return deck
-console.log(newdeck.pop());
-  }
+
+
+
+}
+
+class Deck  {
+    constructor() {
+        this.deck = [];
+        let types = ["C", "D", "H", "S"];
+        let values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+        for (let i = 0; i < types.length; i++) {
+            for (let j = 0; j < values.length; j++) {
+                this.deck.push(new Card(values[j], types[i])); //A-C -> K-C, A-D -> K-D
+            }
+        }
+        
+    }
+    
+    
+    
+    getCard = ()=> {
+        return this.deck.pop()
+    }
+   
+}
+
+
+class Card {
+constructor(values,types) {
+    this.values = values
+    this.types = types
+}
+getValue(values,types) {
+    if(!isNaN(this.values)) return parseInt(this.values);
+    else if(this.values == 'A') return 11;
+    return 10;
+}
+}
+class Player {
+ constructor() {
+     this.hand = []
+     this.playerSum = 0
+     this.skipTurn = false
+    
+ }
+ hit=()=>{
+    // this is the error here
+    this.newCard = new Card()
+
+player.hand.push(newCard)
+this.player.playerSum += newCard.getValue()
+/*
+this is the logic for the card
+    let  ard = this.deck.pop()
+    this.playerSum += getValue (card)
+    */
+   }
+   pass = () => {
+
+    this.player.skipturn = true
+   }
  
- randomNumber()
+} 
+pass = () => {
 
-singleRound = (numPlayers) => {
-  console.log(`Playing with ${numPlayers} players`);
-  // All the hands at the end of a game
-  let players = new Array(numPlayers);
+    this.player.skipturn = true
+   }
+ 
 
-  // Hit every player until > 17
-  for (let player = 0; player < numPlayers; player++) {
-    players[player] = [];
-    let sumPlayer = 0;
-    while (sumPlayer < 17) {
-      let cardValue = randomNumber(11);
-      players[player].push(cardValue);
-      sumPlayer += cardValue;
+playGame = (numRounds, numPlayers) => {
+    console.log(`Rounds: ${numRounds}, Players: ${numPlayers}`);
+    for (let round = 0; round < numRounds; round++) {
+      console.log(`====\nRound: ${round + 1}`);
+      new Game(numPlayers).play(numPlayers);
     }
-    console.log(`Player ${player}: ${players[player]}`);
-  }
+  };
+  
+  playGame(2, 3);
 
-  // Find player with max score (below 22) and make them winner
-  let winner = 0;
-  let winnerScore = 0;
-  for (let player = 0; player < numPlayers; player++) {
-    let playerScore = players[player].reduce((a, b) => a + b);
-    if (playerScore <= 21 && playerScore > winnerScore) {
-      winner = player;
-      winnerScore = playerScore;
-    }
-  }
-  console.log(`Winner = ${winner} with score ${winnerScore}`);
-};
 
-playGame(3, 4);
