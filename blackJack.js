@@ -37,38 +37,72 @@ class Game {
     }
 
 play (numPlayers) {
+   let  players = this.players
+    
+    console.log(`playing with ${numPlayers} Players`)
     
 
     for (let player = 0; player < numPlayers; player++) {
-        this.players[player] = new Player();
+        players[player] = new Player();
         let sumPlayer = 0;
         
-        while (this.players[player].playerSum < 18 && this.players[player].skipTurn === false) {
+        
+        while (players[player].playerSum < 18 ) {
         let card = this.deck.getCard();
         
-        this.players[player].hand.push(card);
-        console.log(`Card --${card}`)
+        players[player].hand.push(card);
+        console.log(`Players ${player} current hand is Card -- ${players[player].hand.toString()}-- `)
 
-        this.players[player].playerSum += card.getValue();
+        players[player].playerSum += card.getValue();
+        players[player].scoreHand.push(card.getValue()) 
+        console.log(players[player].playerSum )
 
-        console.log(this.players[player].playerSum )
-        
-    
 
         }
+
+    }
+        let winner = 0;
+        let winnerScore = 0;
+        let noOne = 'no one won'
+        for (let player = 0; player < numPlayers; player++) {
+
+        
+        let playerScore = players[player].scoreHand.reduce((a, b) => a + b);
+        if (playerScore <= 21 && playerScore > winnerScore) {
+            winner = player;
+            winnerScore = playerScore;
+
+            if (winnerScore === 0) {
+                winner = noOne
+            }
+            else {
+                winner = player
+            }
+        }
+
+        if (winnerScore === 0) {
+            winner = noOne
+        }
+        else {
+            winner = player
+        }
+    }
+
+       
+        
+        console.log(`Winner = ${winner} with score ${winnerScore}`);
+    }
         
 
         
 
-      console.log(sumPlayer)
-        console.log(`Player ${player}: ${this.players[player]}`);
+      
     }
     
-}
 
 
 
-}
+
 
 class Deck  {
     constructor() {
@@ -80,9 +114,16 @@ class Deck  {
                 this.deck.push(new Card(values[j], types[i])); //A-C -> K-C, A-D -> K-D
             }
         }
-        
+        this.shuffle()
     }
-    
+    shuffle() {
+        for (let i = 0; i < this.deck.length; i++) {
+            let j = Math.floor(Math.random() * this.deck.length); // (0-1) * 52 => (0-51.9999)
+            let temp = this.deck[i];
+            this.deck[i] = this.deck[j];
+            this.deck[j] = temp;
+        }
+    }
     
     
     getCard = ()=> {
@@ -102,12 +143,17 @@ getValue(values,types) {
     else if(this.values == 'A') return 11;
     return 10;
 }
+toString(values,types) {
+
+    return `${this.types} ${this.values}`
+}
 }
 class Player {
  constructor() {
      this.hand = []
      this.playerSum = 0
      this.skipTurn = false
+     this.scoreHand = []
     
  }
  hit=()=>{
@@ -142,6 +188,6 @@ playGame = (numRounds, numPlayers) => {
     }
   };
   
-  playGame(2, 3);
+  playGame(3, 4);
 
 
